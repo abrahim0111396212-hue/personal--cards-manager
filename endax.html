@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="description" content="تطبيق إدارة بطاقاتي - نظام آمن مشفر AES-256-GCM">
+    <meta name="theme-color" content="#e31b23">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src https://cdnjs.cloudflare.com; connect-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>إدارة بطاقاتي - نظام آمن مشفر</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.6.6/css/flag-icons.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+</head>
+<body>
+    <div class="app-container" id="appContainer">
+        <!-- صفحة الترحيب -->
+        <div id="splashPage" class="page splash-page active">
+            <div class="splash-language">
+                <button class="splash-language-btn" id="splashLanguageBtn"><i class="fas fa-globe"></i><span id="splashLangText">English</span></button>
+            </div>
+            <div class="top-icon-splash"><i class="fas fa-mobile-alt"></i></div>
+            <div class="splash-circle" id="startBtn">
+                <i class="fas fa-credit-card" style="font-size: 48px; color:#e31b23;"></i>
+                <h1 id="splashTitle">إدارة بطاقاتي</h1>
+                <p id="splashSub">نظام آمن مشفر</p>
+            </div>
+            <div class="red-top-text" id="welcomeText">مرحباً بك في منصتك الآمنة</div>
+            <div class="white-bottom-text" id="getStartedBtn">اضغط للبدء <i class="fas fa-arrow-left"></i></div>
+            <div class="social-icons-bottom">
+                <i class="fab fa-facebook-f"></i><i class="fab fa-whatsapp"></i><i class="fab fa-tiktok"></i>
+                <i class="fab fa-linkedin-in"></i><i class="fab fa-viber"></i><i class="fab fa-telegram"></i><i class="fas fa-envelope"></i>
+            </div>
+        </div>
+
+        <!-- الصفحة الرئيسية -->
+        <div id="mainPage" class="page main-page">
+            <div class="main-header">
+                <div class="logo-area"><i class="fas fa-credit-card"></i><h2 id="logoText">إدارة بطاقاتي</h2></div>
+                <div class="header-buttons"><button class="language-btn" id="mainLanguageBtn"><i class="fas fa-globe"></i><span id="mainLangText">English</span></button></div>
+            </div>
+            <div class="main-content">
+                <div id="loginFormDiv">
+                    <div class="form-group"><label id="phoneLabelMain">رقم الهاتف</label><input type="tel" id="loginPhone" placeholder="+249912345678" autocomplete="off"></div>
+                    <div class="form-group"><label id="passwordLabelMain">كلمة المرور</label><input type="password" id="loginPassword" placeholder="********" autocomplete="off"></div>
+                    <button id="doLoginBtn" class="btn">تسجيل الدخول</button>
+                    <div class="switch-link" id="showRegisterBtn">ليس لديك حساب؟ <strong>تسجيل جديد</strong></div>
+                    <div class="forgot-link" id="forgotPasswordMain">🔐 نسيت كلمة المرور؟</div>
+                </div>
+                <div id="registerFormDiv" style="display:none;">
+                    <div class="form-group"><label id="countryLabel">الدولة *</label><select id="countrySelect"><option value="">اختر الدولة</option></select></div>
+                    <div class="form-group"><label id="stateLabel">الولاية *</label><select id="stateSelect" disabled><option value="">اختر الدولة أولاً</option></select></div>
+                    <div class="form-group"><label id="cityLabel">المدينة *</label><select id="citySelect" disabled><option value="">اختر الولاية أولاً</option></select></div>
+                    <div class="form-group"><label id="fullNameLabel">الاسم الكامل (رباعي) *</label><input type="text" id="fullName" placeholder="مثال: محمد أحمد علي سالم"></div>
+                    <div class="form-group"><label id="phoneRegLabel">رقم الهاتف *</label><div style="display: flex; gap: 10px;"><div class="country-code" id="countryCodeDisplay" style="width:100px; background:#f5f5f5; padding:12px; border-radius:28px;"><span class="fi fi-sd"></span> +249</div><input type="tel" id="regPhoneNumber" placeholder="912345678" style="flex:1;"></div></div>
+                    <div class="form-group"><label id="bankLabel">البنك *</label><select id="bankSelect"><option value="">اختر البنك</option></select></div>
+                    <div class="form-group"><label id="branchLabel">فرع البنك</label><input type="text" id="bankBranch" placeholder="مثال: فرع الخرطوم"></div>
+                    <div class="form-group"><label id="passwordRegLabel">كلمة المرور *</label><input type="password" id="regPassword" placeholder="********"></div>
+                    <div class="form-group"><label id="confirmLabel">تأكيد كلمة المرور *</label><input type="password" id="confirmPassword" placeholder="********"></div>
+                    <div class="social-links-section" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;"><label id="socialLabel">🌐 روابط التواصل الاجتماعي (اختياري)</label>
+                        <div class="social-grid">
+                            <div class="social-item"><i class="fab fa-facebook-f"></i><input type="url" id="fbLink" placeholder="رابط فيسبوك"></div>
+                            <div class="social-item"><i class="fab fa-whatsapp"></i><input type="url" id="waLink" placeholder="رابط واتساب"></div>
+                            <div class="social-item"><i class="fab fa-tiktok"></i><input type="url" id="ttLink" placeholder="رابط تيك توك"></div>
+                            <div class="social-item"><i class="fab fa-linkedin"></i><input type="url" id="inLink" placeholder="رابط لينكد إن"></div>
+                            <div class="social-item"><i class="fab fa-viber"></i><input type="url" id="viberLink" placeholder="رابط فايبر"></div>
+                            <div class="social-item"><i class="fab fa-telegram"></i><input type="url" id="teleLink" placeholder="رابط تلجرام"></div>
+                            <div class="social-item"><i class="fas fa-envelope"></i><input type="email" id="emailLink" placeholder="البريد الإلكتروني"></div>
+                        </div>
+                    </div>
+                    <button id="registerBtn" class="btn">تسجيل جديد</button>
+                    <div class="switch-link" id="showLoginLink">لديك حساب؟ <strong>تسجيل الدخول</strong></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- لوحة التحكم -->
+        <div id="dashboardPage" class="page main-page">
+            <div class="main-header">
+                <div class="logo-area"><i class="fas fa-credit-card"></i><h2 id="dashboardLogo">إدارة بطاقاتي</h2></div>
+                <div class="header-buttons">
+                    <button class="settings-btn" id="settingsBtn"><i class="fas fa-cog"></i><span id="settingsText">الإعدادات</span></button>
+                    <button class="language-btn" id="dashboardLangBtn"><i class="fas fa-globe"></i><span id="dashboardLangText">English</span></button>
+                </div>
+            </div>
+            <div class="main-content"><div id="userProfileArea"></div><button id="logoutBtn" class="btn btn-outline">تسجيل خروج</button></div>
+        </div>
+    </div>
+
+    <!-- المودالات -->
+    <div id="forgotModal" class="modal"><div class="modal-content"><h3 id="modalTitle">استعادة كلمة المرور</h3><p id="modalDesc">أدخل رقم هاتفك المسجل</p><input type="tel" id="resetPhone" style="width:100%; padding:12px; margin:15px 0; border-radius:28px;"><button id="sendPasswordBtn" class="btn">إرسال</button><button id="closeModalBtn" class="btn btn-outline" style="margin-top:10px;">إغلاق</button></div></div>
+    <div id="settingsModal" class="modal"><div class="modal-content"><h3 id="settingsModalTitle">⚙️ الإعدادات</h3><div><h4 id="changePhotoTitle">🖼️ تغيير الصورة</h4><div style="text-align:center;"><img id="settingsProfileImage" class="image-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e31b23'/%3E%3Ctext x='50' y='67' text-anchor='middle' fill='white' font-size='40'%3E👤%3C/text%3E%3C/svg%3E"><input type="file" id="settingsImageInput" accept="image/*" style="display:none;"><button id="uploadImageBtn" class="btn-small" style="background:#4CAF50; margin-top:10px;"><i class="fas fa-upload"></i> <span id="uploadBtnText">تحميل</span></button></div></div><hr><div><h4 id="changePasswordTitle">🔐 تغيير كلمة المرور</h4><div class="form-group"><label id="currentPassLabel">الحالية</label><input type="password" id="currentPassword"></div><div class="form-group"><label id="newPassLabel">الجديدة</label><input type="password" id="newPassword"></div><div class="form-group"><label id="confirmNewLabel">تأكيد</label><input type="password" id="confirmNewPassword"></div><button id="updatePasswordBtn" class="btn-small" style="background:#e31b23; width:100%;"><i class="fas fa-save"></i> <span id="updatePassText">تحديث</span></button></div><button id="closeSettingsBtn" class="btn btn-outline" style="margin-top:20px;">إغلاق</button></div></div>
+
+    <div class="security-badge"><i class="fas fa-shield-alt"></i> AES-256-GCM + PBKDF2</div>
+
+    <script src="countries-data.js"></script>
+    <script src="encryption.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').catch(err => console.log('SW error:', err));
+        }
+    </script>
+</body>
+</html>
